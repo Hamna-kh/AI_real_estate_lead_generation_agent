@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>Lahore Property Assistant</title>
+<style>
+  /* ============================================================
+     TOKENS
+     Palette drawn from Lahore's tiled architecture: deep teal
+     ("Badshahi" blue-green), warm brass accent, sand-paper
+     background. Two type families: Fraunces (warm serif, used
+     only for the brand mark) and Inter (workhorse sans for
+     every message and control).
+  ============================================================ */
+  :root {
+    --color-bg: #F3EEE4;
+    --color-panel: #FFFFFF;
+    --color-header: #123B3E;
+    --color-header-deep: #0C2A2C;
+    --color-accent: #B9862E;
+    --color-accent-deep: #97691E;
+    --color-user-bubble: #175C55;
+    --color-user-text: #F7F3E8;
+    --color-ai-bubble: #FFFFFF;
+    --color-ai-border: #E4DCC9;
+    --color-text: #1D2321;
+    --color-text-muted: #6E7568;
+    --color-divider: #E4DCC9;
+    --color-error-bg: #FBEAE7;
+    --color-error-border: #E3B3A9;
+    --color-error-text: #8A2E20;
+    --radius-lg: 18px;
+    --radius-sm: 6px;
+    --shadow-panel: 0 18px 40px -20px rgba(12, 42, 44, 0.35);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --color-bg: #0E1513;
+      --color-panel: #16211E;
+      --color-header: #0C2A2C;
+      --color-header-deep: #081C1E;
+      --color-user-bubble: #1F6E64;
+      --color-user-text: #F7F3E8;
+      --color-ai-bubble: #1C2825;
+      --color-ai-border: #2A3733;
+      --color-text: #EDEAE0;
+      --color-text-muted: #9BA69E;
+      --color-divider: #2A3733;
+      --color-error-bg: #2E1B18;
+      --color-error-border: #5A332B;
+      --color-error-text: #E3A79A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --color-bg: #0E1513;
+    --color-panel: #16211E;
+    --color-header: #0C2A2C;
+    --color-header-deep: #081C1E;
+    --color-user-bubble: #1F6E64;
+    --color-user-text: #F7F3E8;
+    --color-ai-bubble: #1C2825;
+    --color-ai-border: #2A3733;
+    --color-text: #EDEAE0;
+    --color-text-muted: #9BA69E;
+    --color-divider: #2A3733;
+    --color-error-bg: #2E1B18;
+    --color-error-border: #5A332B;
+    --color-error-text: #E3A79A;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--color-bg);
+    background-image:
+      radial-gradient(circle at 10% 8%, rgba(185,134,46,0.07), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(18,59,62,0.06), transparent 45%);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  @font-face {
+    font-family: "Fraunces";
+    src: local("Fraunces");
+  }
+
+  .app-shell {
+    width: 100%;
+    max-width: 620px;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-panel);
+    box-shadow: var(--shadow-panel);
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (min-width: 680px) {
+    body { padding: 28px 16px; }
+    .app-shell {
+      height: min(860px, calc(100dvh - 56px));
+      border-radius: 20px;
+    }
+  }
+
+  /* ---------------- Header ---------------- */
+  .chat-header {
+    background: linear-gradient(135deg, var(--color-header) 0%, var(--color-header-deep) 100%);
+    color: #F3EEE4;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    padding-top: calc(14px + env(safe-area-inset-top, 0px));
+    flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+  }
+
+  .avatar-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(243, 238, 228, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(243, 238, 228, 0.18);
+  }
+  .avatar-mark svg { width: 22px; height: 22px; }
+
+  .header-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .header-name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.08rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .header-status {
+    font-size: 0.78rem;
+    color: rgba(243, 238, 228, 0.72);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6FBF8B;
+    flex-shrink: 0;
+    transition: background 0.2s ease;
+  }
+  .status-dot.thinking { background: var(--color-accent); animation: pulseDot 1s ease-in-out infinite; }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    color: rgba(243, 238, 228, 0.85);
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease;
+  }
+  .icon-btn:hover { background: rgba(243, 238, 228, 0.12); }
+  .icon-btn:active { background: rgba(243, 238, 228, 0.2); }
+  .icon-btn svg { width: 19px; height: 19px; }
+  .icon-btn:focus-visible, button:focus-visible, textarea:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------------- Messages ---------------- */
+  .messages-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 14px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    scroll-behavior: smooth;
+  }
+
+  .date-sep {
+    align-self: center;
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    background: var(--color-bg);
+    border: 1px solid var(--color-divider);
+    padding: 3px 12px;
+    border-radius: 20px;
+    margin: 10px 0 16px;
+  }
+
+  .msg-row {
+    display: flex;
+    margin-bottom: 10px;
+    animation: msgIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    max-width: 100%;
+  }
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg-row.user { justify-content: flex-end; }
+  .msg-row.ai { justify-content: flex-start; }
+
+  .bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    font-size: 0.94rem;
+    line-height: 1.45;
+    position: relative;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+  }
+
+  .msg-row.ai .bubble {
+    background: var(--color-ai-bubble);
+    border: 1px solid var(--color-ai-border);
+    color: var(--color-text);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+  }
+
+  .msg-row.user .bubble {
+    background: var(--color-user-bubble);
+    color: var(--color-user-text);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-sm) var(--radius-lg);
+  }
+
+  .msg-row.error .bubble {
+    background: var(--color-error-bg);
+    border: 1px solid var(--color-error-border);
+    color: var(--color-error-text);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+  }
+
+  .msg-time {
+    font-size: 0.68rem;
+    margin-top: 4px;
+    opacity: 0.6;
+    display: block;
+  }
+  .msg-row.user .msg-time { text-align: right; color: var(--color-user-text); }
+  .msg-row.ai .msg-time, .msg-row.error .msg-time { color: var(--color-text-muted); }
+
+  /* Typing indicator */
+  .typing-row { display: flex; margin-bottom: 10px; animation: msgIn 0.2s ease; }
+  .typing-bubble {
+    background: var(--color-ai-bubble);
+    border: 1px solid var(--color-ai-border);
+    border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) var(--radius-sm);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .typing-bubble .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+    animation: dotBounce 1.1s infinite ease-in-out;
+  }
+  .typing-bubble .dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-bubble .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes dotBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .msg-row, .typing-row { animation: none; }
+    .dot, .status-dot.thinking { animation: none; }
+  }
+
+  /* ---------------- Composer ---------------- */
+  .composer {
+    flex-shrink: 0;
+    border-top: 1px solid var(--color-divider);
+    background: var(--color-panel);
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .composer-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-divider);
+    border-radius: 22px;
+    padding: 6px 6px 6px 16px;
+  }
+
+  .composer-row:focus-within {
+    border-color: var(--color-accent);
+  }
+
+  #messageInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    color: var(--color-text);
+    max-height: 120px;
+    padding: 8px 0;
+  }
+  #messageInput:focus { outline: none; }
+  #messageInput::placeholder { color: var(--color-text-muted); }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: var(--color-user-bubble);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform 0.12s ease, background 0.15s ease, opacity 0.15s ease;
+  }
+  .send-btn svg { width: 18px; height: 18px; margin-left: 1px; }
+  .send-btn:hover:not(:disabled) { background: var(--color-accent-deep); }
+  .send-btn:active:not(:disabled) { transform: scale(0.92); }
+  .send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .composer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 6px 0;
+  }
+
+  .hint-text {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+  }
+
+  .clear-link {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .clear-link:hover { color: var(--color-error-text); }
+
+  /* Scrollbar polish */
+  .messages-scroll::-webkit-scrollbar { width: 8px; }
+  .messages-scroll::-webkit-scrollbar-thumb {
+    background: var(--color-divider);
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="chat-header">
+    <div class="avatar-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 11.5L12 4l9 7.5" stroke="#F3EEE4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5.5 10v8.5a1 1 0 0 0 1 1H10v-5.2a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5.2h3.5a1 1 0 0 0 1-1V10" stroke="#F3EEE4" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <div class="header-name">Lahore Property Assistant</div>
+      <div class="header-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel">AI Assistant • Online</span>
+      </div>
+    </div>
+    <button class="icon-btn" id="clearChatBtn" title="Start a new conversation" aria-label="Start a new conversation">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 12a8 8 0 1 1 2.6 5.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 20v-5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- ===================== MESSAGES ===================== -->
+  <main class="messages-scroll" id="messagesScroll" aria-live="polite">
+    <!-- messages injected here by JS -->
+  </main>
+
+  <!-- ===================== COMPOSER ===================== -->
+  <div class="composer">
+    <div class="composer-row">
+      <textarea
+        id="messageInput"
+        rows="1"
+        placeholder="Message Lahore Property Assistant…"
+        aria-label="Type a message"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" aria-label="Send message">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 12l16-8-6 8 6 8-16-8z" fill="currentColor"/>
+        </svg>
+      </button>
+    </div>
+    <div class="composer-footer">
+      <span class="hint-text">Enter to send · Shift+Enter for a new line</span>
+      <button class="clear-link" id="clearChatLink">Clear chat</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ================================================================
+   CONFIGURATION
+   Replace with your n8n Production Webhook URL. This is the ONLY
+   endpoint this frontend talks to — there is no AI key here, and
+   there never should be. All AI logic, lead qualification, and
+   Google Calendar booking happen inside your n8n workflow.
+================================================================ */
+const WEBHOOK_URL = "http://localhost:5678/webhook/lahore-property-agent";
+
+/* ---------------------------------------------------------------
+   CONSTANTS & STATE
+--------------------------------------------------------------- */
+const STORAGE_SESSION_KEY = "realestate_session_id";
+const STORAGE_HISTORY_KEY = "realestate_chat_history";
+
+const WELCOME_MESSAGE =
+  "Hi! 👋 I'm your Lahore Property Assistant.\n\n" +
+  "I can help you find properties based on your budget, preferred location, and buying timeline.\n\n" +
+  "What type of property are you looking for?";
+
+let sessionId = null;
+let isWaitingForReply = false;
+
+/* Element refs */
+const messagesScroll = document.getElementById("messagesScroll");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const statusLabel = document.getElementById("statusLabel");
+const statusDot = document.getElementById("statusDot");
+const clearChatBtn = document.getElementById("clearChatBtn");
+const clearChatLink = document.getElementById("clearChatLink");
+
+/* ---------------------------------------------------------------
+   SESSION MANAGEMENT
+   A sessionId is created once and persisted in localStorage so
+   n8n's memory node can recognize returning visitors across page
+   refreshes. Clearing the chat generates a brand-new sessionId.
+--------------------------------------------------------------- */
+function generateSessionId() {
+  const random = Math.random().toString(36).slice(2, 11);
+  const timePart = Date.now().toString(36);
+  return `realestate_session_${timePart}${random}`;
+}
+
+function loadOrCreateSession() {
+  let existing = localStorage.getItem(STORAGE_SESSION_KEY);
+  if (!existing) {
+    existing = generateSessionId();
+    localStorage.setItem(STORAGE_SESSION_KEY, existing);
+  }
+  return existing;
+}
+
+/* ---------------------------------------------------------------
+   LOCAL HISTORY (visual continuity across refreshes only —
+   the real conversation memory lives in n8n, keyed by sessionId)
+--------------------------------------------------------------- */
+function saveHistory(history) {
+  try {
+    localStorage.setItem(STORAGE_HISTORY_KEY, JSON.stringify(history));
+  } catch (err) {
+    console.warn("Could not persist chat history:", err);
+  }
+}
+
+function loadHistory() {
+  try {
+    const raw = localStorage.getItem(STORAGE_HISTORY_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (err) {
+    console.warn("Could not read stored chat history:", err);
+    return null;
+  }
+}
+
+let history = [];
+
+/* ---------------------------------------------------------------
+   RENDERING HELPERS
+--------------------------------------------------------------- */
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function formatTime(date) {
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function renderDateSeparator() {
+  const sep = document.createElement("div");
+  sep.className = "date-sep";
+  sep.textContent = "Today";
+  messagesScroll.appendChild(sep);
+}
+
+function renderMessage(role, text, isoTimestamp, persist = true) {
+  const row = document.createElement("div");
+  row.className = `msg-row ${role}`;
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+
+  const time = document.createElement("span");
+  time.className = "msg-time";
+  time.textContent = formatTime(new Date(isoTimestamp));
+
+  bubble.appendChild(time);
+  row.appendChild(bubble);
+  messagesScroll.appendChild(row);
+  scrollToBottom();
+
+  if (persist) {
+    history.push({ role, text, timestamp: isoTimestamp });
+    saveHistory(history);
+  }
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    messagesScroll.scrollTop = messagesScroll.scrollHeight;
+  });
+}
+
+let typingRowEl = null;
+
+function showTypingIndicator() {
+  setStatus("thinking");
+  const row = document.createElement("div");
+  row.className = "typing-row";
+  row.innerHTML = `
+    <div class="typing-bubble" aria-label="Lahore Property Assistant is typing">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>`;
+  messagesScroll.appendChild(row);
+  typingRowEl = row;
+  scrollToBottom();
+}
+
+function hideTypingIndicator() {
+  setStatus("online");
+  if (typingRowEl) {
+    typingRowEl.remove();
+    typingRowEl = null;
+  }
+}
+
+function setStatus(state) {
+  if (state === "thinking") {
+    statusLabel.textContent = "AI Assistant • Thinking...";
+    statusDot.classList.add("thinking");
+  } else {
+    statusLabel.textContent = "AI Assistant • Online";
+    statusDot.classList.remove("thinking");
+  }
+}
+
+/* ---------------------------------------------------------------
+   COMPOSER BEHAVIOR
+--------------------------------------------------------------- */
+function autoResizeInput() {
+  messageInput.style.height = "auto";
+  messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + "px";
+}
+
+function setComposerEnabled(enabled) {
+  isWaitingForReply = !enabled;
+  sendBtn.disabled = !enabled;
+  messageInput.disabled = !enabled;
+}
+
+messageInput.addEventListener("input", autoResizeInput);
+
+messageInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    handleSend();
+  }
+});
+
+sendBtn.addEventListener("click", handleSend);
+clearChatBtn.addEventListener("click", clearConversation);
+clearChatLink.addEventListener("click", clearConversation);
+
+/* ---------------------------------------------------------------
+   SENDING A MESSAGE
+--------------------------------------------------------------- */
+async function handleSend() {
+  const text = messageInput.value.trim();
+  if (!text || isWaitingForReply) return;
+
+  const timestamp = new Date().toISOString();
+
+  // 1. Show the user's message immediately
+  renderMessage("user", text, timestamp);
+
+  // Reset the composer
+  messageInput.value = "";
+  autoResizeInput();
+  setComposerEnabled(false);
+
+  // 2. Show the typing indicator
+  showTypingIndicator();
+
+  try {
+    // 3. Send the request to n8n
+    const aiReplyText = await sendToWebhook(text, timestamp);
+
+    // 4/5. Remove typing indicator, then show the AI reply
+    hideTypingIndicator();
+    renderMessage("ai", aiReplyText, new Date().toISOString());
+  } catch (err) {
+    console.error("Webhook request failed:", err);
+    hideTypingIndicator();
+    renderMessage(
+      "error",
+      "Sorry, I'm having trouble connecting right now. Please try again.",
+      new Date().toISOString(),
+      false
+    );
+  } finally {
+    setComposerEnabled(true);
+    messageInput.focus();
+  }
+}
+
+/* ---------------------------------------------------------------
+   WEBHOOK INTEGRATION
+   Sends { message, sessionId, timestamp } to the n8n webhook and
+   reads the AI's reply back out of the JSON response. n8n owns
+   all AI logic, memory, lead qualification, and booking — this
+   function only relays messages back and forth.
+--------------------------------------------------------------- */
+async function sendToWebhook(message, timestamp) {
+  if (!WEBHOOK_URL || WEBHOOK_URL === "PASTE_N8N_WEBHOOK_URL_HERE") {
+    throw new Error("WEBHOOK_URL is not configured yet.");
+  }
+
+  const response = await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: message,
+      sessionId: sessionId,
+      timestamp: timestamp
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook responded with status ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  // Support { "reply": "..." } as the primary shape
+  if (typeof data.reply === "string" && data.reply.trim() !== "") {
+    return data.reply;
+  }
+
+  // Fallback shape: { "output": "..." }
+  if (typeof data.output === "string" && data.output.trim() !== "") {
+    return data.output;
+  }
+
+  // Neither expected field was present
+  throw new Error("Webhook response did not contain 'reply' or 'output'.");
+}
+
+/* ---------------------------------------------------------------
+   CLEAR / NEW CONVERSATION
+--------------------------------------------------------------- */
+function clearConversation() {
+  if (isWaitingForReply) return;
+  const confirmed = window.confirm("Start a new conversation? This clears the current chat.");
+  if (!confirmed) return;
+
+  sessionId = generateSessionId();
+  localStorage.setItem(STORAGE_SESSION_KEY, sessionId);
+  history = [];
+  saveHistory(history);
+
+  messagesScroll.innerHTML = "";
+  renderDateSeparator();
+  showWelcomeMessage();
+  setStatus("online");
+  messageInput.focus();
+}
+
+/* ---------------------------------------------------------------
+   WELCOME MESSAGE
+--------------------------------------------------------------- */
+function showWelcomeMessage() {
+  renderMessage("ai", WELCOME_MESSAGE, new Date().toISOString());
+}
+
+/* ---------------------------------------------------------------
+   INIT
+--------------------------------------------------------------- */
+function init() {
+  sessionId = loadOrCreateSession();
+  renderDateSeparator();
+
+  const storedHistory = loadHistory();
+  if (storedHistory && storedHistory.length > 0) {
+    storedHistory.forEach((entry) => {
+      renderMessage(entry.role, entry.text, entry.timestamp, false);
+    });
+    history = storedHistory;
+  } else {
+    showWelcomeMessage();
+  }
+
+  autoResizeInput();
+  messageInput.focus();
+}
+
+init();
+</script>
+
+</body>
+</html>
