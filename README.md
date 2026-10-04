@@ -40,7 +40,9 @@ The result is an automated lead qualification and consultation pipeline that red
 
 ## How It Works
 
+<p align="center">
 <img src="docs/architecture.png" alt="How It Works – workflow architecture" width="500">
+</p>
 
 ### Step by step
 
@@ -72,8 +74,9 @@ Since the Meta WhatsApp integration is not connected yet, I built a simple chat 
 - The page displays the agent's reply from the webhook response, so it feels like a normal chat.
 - Everything else (qualification, calendar event, broker email, database) runs inside the n8n workflow, so the same logic will work once WhatsApp is connected.
 - The page is built with [HTML, CSS and JavaScript].
-
-<img src="docs/Screenshots/frontend-chat.png" alt="Demo frontend – chat interface" width="500">
+<p align="center">
+<img src="docs/Screenshots/frontend-chat.PNG" alt="Demo frontend – chat interface" width="500">
+</p>
 
 ## Tech Stack
 
@@ -209,23 +212,33 @@ Use a new `session_id`, give a budget and a timeline within 3 months, then provi
 
 **n8n Workflow:**
 
-<img src="docs/screenshots/n8n-workflow.png" alt="n8n Workflow" width="700">
+<p align="center">
+<img src="docs/Screenshots/n8n-workflow.PNG" alt="n8n Workflow" width="700">
+</p>
 
 **Broker's Email:**
 
-<img src="docs/screenshots/broker-email.png" alt="Broker's Email" width="450">
+<p align="center">
+<img src="docs/Screenshots/broker-email.PNG" alt="Broker's Email" width="450">
+</p>
 
 **Google Calender:**
 
-<img src="docs/screenshots/calendar-event.png" alt="Google Calender" width="700">
+<p align="center">
+<img src="docs/Screenshots/calender-event.PNG" alt="Google Calender" width="700">
+</p>
 
 **Supabase:**
 
-<img src="docs/screenshots/supabase-row.png" alt="Supabase" width="700">
+<p align="center">
+<img src="docs/Screenshots/supabase-row.PNG" alt="Supabase" width="700">
+</p>
 
 ## Project Structure
 
-<img src="docs/project-structure.png" alt="Project Structure" width="700">
+<p align="center">
+<img src="docs/project_structure.png" alt="Project Structure" width="700">
+</p>
 
 ## Current Limitations
 
@@ -251,3 +264,4 @@ Use a new `session_id`, give a budget and a timeline within 3 months, then provi
 
 - Linkedin: [https://www.linkedin.com/in/hamnak/](https://www.linkedin.com/in/hamnak/)
 - Gmail: [hamnakhalid399@gmail.com](mailto:hamnakhalid399@gmail.com)
+- Demo Videos Link: [https://drive.google.com/drive/folders/147Wc0rm4rpi0cL-RtiSIk9wvHs4ihQhK]
