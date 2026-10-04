@@ -1,16 +1,16 @@
 # AI Real Estate Lead Agent
 
-This project is an AI-powered real estate lead qualification and property consultation system designed to automate the initial stage of the property sales journey.
+This project is an <b>AI-powered real estate lead qualification and property consultation system</b> designed to automate the initial stage of the property sales journey.
 
-Instead of requiring a broker or sales representative to manually handle every incoming inquiry, the AI assistant acts as the first point of contact, engaging leads through a conversational interface and intelligently gathering their property requirements. It guides the conversation through key qualification criteria such as preferred location, budget, purchase timeline, and purpose, while maintaining the context of the conversation through session-based memory.
+Instead of requiring a broker or sales representative to manually handle every incoming inquiry, the AI assistant acts as the <b>first point of contact</b>, engaging leads through a conversational interface and intelligently gathering their property requirements. It guides the conversation through key qualification criteria such as <b>preferred location, budget, purchase timeline, and purpose</b>, while maintaining the context of the conversation through session-based memory.
 
-As the conversation progresses, the system evaluates the lead based on predefined qualification rules. Qualified leads are guided through the next stage of the process, where the assistant collects the necessary contact details and offers to arrange a property consultation. Once a visit is agreed upon, the system automatically creates a Google Calendar appointment and notifies the broker via email with the lead's complete requirements and appointment details.
+As the conversation progresses, the system evaluates the lead based on predefined qualification rules. Qualified leads are guided through the next stage of the process, where the assistant collects the necessary contact details and offers to arrange a property consultation. Once a visit is agreed upon, the system automatically creates a <b>Google Calendar appointment</b> and notifies the broker via <b>email with the lead's complete requirements and appointment details.</b>
 
-Lead information is also stored in Supabase, providing a persistent record of qualified prospects and their captured requirements. Leads that do not currently meet the qualification criteria are handled through a separate nurture path, allowing the broker to retain their information without unnecessarily triggering the booking and notification workflow.
+Lead information is also stored in <b>Supabase</b>, providing a persistent record of qualified prospects and their captured requirements. Leads that do not currently meet the qualification criteria are handled through a <b>separate nurture path</b>, allowing the broker to retain their information without unnecessarily triggering the booking and notification workflow.
 
-The entire process is orchestrated using n8n, with Google Gemini powering the conversational AI, Supabase handling lead data, Google Calendar managing consultations, and Gmail handling broker notifications.
+The entire process is orchestrated using <b>n8n</b>, with <b>Google Gemini</b> powering the conversational AI, <b>Supabase</b> handling lead data, <b>Google Calendar</b> managing consultations, and <b>Gmail</b> handling broker notifications.
 
-The result is an automated lead-handling pipeline that moves a prospect from initial inquiry → requirement discovery → lead qualification → contact collection → consultation scheduling → broker notification, reducing repetitive manual work while ensuring that qualified opportunities are routed efficiently to the sales team.
+The result is an automated lead-handling pipeline that moves a prospect from <b>initial inquiry → requirement discovery → lead qualification → contact collection → consultation scheduling → broker notification</b>, reducing repetitive manual work while ensuring that qualified opportunities are routed efficiently to the sales team.
 
 ## Problem It Solves
 
@@ -73,7 +73,7 @@ Since the Meta WhatsApp integration is not connected yet, I built a simple chat 
 - Everything else (qualification, calendar event, broker email, database) runs inside the n8n workflow, so the same logic will work once WhatsApp is connected.
 - The page is built with [HTML, CSS and JavaScript].
 
-<img src="docs/screenshots/frontend-chat.png" alt="Demo frontend – chat interface" width="500">
+<img src="docs/Screenshots/frontend-chat.png" alt="Demo frontend – chat interface" width="500">
 
 ## Tech Stack
 
