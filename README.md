@@ -173,7 +173,7 @@ the customer-facing side of the system.
 
 - The page is built with \[HTML, CSS and JavaScript\].
 
-  <img src="docs/screenshots/frontend-chat.png" alt="frontend" width="500">
+  <img src="docs/Screenshots/frontend-chat.png" alt="frontend" width="500">
 
 # Tech Stack
 
@@ -356,27 +356,27 @@ further messages in the same session should not trigger anything new.
 
 ## n8n Workflow:
 
-<img src="docs/screenshots/n8n-workflow.png" style="width:6.25764in;height:3.07708in"
+<img src="docs/Screenshots/n8n-workflow.png" style="width:6.25764in;height:3.07708in"
 alt="n8n workflow" />
 
 **Broker’s Email:**
 
-<img src="docs/screenshots/broker-email.png" style="width:4.09722in;height:4.31667in"
+<img src="docs/Screenshots/broker-email.png" style="width:4.09722in;height:4.31667in"
 alt="broker email" />
 
 ## Google Calender:
 
-<img src="docs/screenshots/calendar-event.png" style="width:6.26042in;height:3.78681in"
+<img src="docs/Screenshots/calendar-event.png" style="width:6.26042in;height:3.78681in"
 alt="calender" />
 
 ## Supabase:
 
-<img src="docs/screenshots/supabase-row.png" style="width:6.25556in;height:1.29792in"
+<img src="docs/Screenshots/supabase-row.png" style="width:6.25556in;height:1.29792in"
 alt="supabase" />
 
 # Project Structure
 
-<img src="docs/screenshots/supabase-row.png" style="width:6.25903in;height:5.72014in"
+<img src="docs/project_structure.png" style="width:6.25903in;height:5.72014in"
 alt="structure" />
 
 # Current Limitations
