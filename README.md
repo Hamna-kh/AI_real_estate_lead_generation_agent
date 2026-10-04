@@ -90,8 +90,7 @@ that are ready for the next step.
 
 # How It Works
 
-<img src="media/image1.png" style="width:4.7375in;height:9.10764in"
-alt="architecture" />
+<img src="docs/architecture.png" alt="architecture" width="500">
 
 ## Step by step
 
